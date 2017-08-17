@@ -9,7 +9,7 @@
 import ConfigParser
 import time
 import os
-from SendMail import send_email
+from log import log as log
 
 
 def ayuda():
@@ -35,20 +35,31 @@ def guardar_fichero(parse_estado):
         parse_estado.write(configfile)
 
 
+def GenerarConfiguracion(parse):
+    parse.add_section('configuracion')
+    for i in range(1, 254):
+        parse.set("configuracion", "servidor" + str(i), "192.168.1." + str(i))
+    with open("pingm.ini", "w") as f:
+        parse.write(f)
 
 
 def principal():
     log("Principal")
     parse = ConfigParser.RawConfigParser()
     parse_estado = ConfigParser.RawConfigParser()
-    parse.read("pingm_correo.ini")
+    parse.read("pingm.ini")
     parse_estado.read("estado.ini")
     servidorm = []
     estadom = dict()
     caidasm = dict()
     nombre = dict()
     time_stampm = dict()
-    lista = parse.options('configuracion')
+    try:
+        lista = parse.options('configuracion')
+    except lista:
+        print ("Genero configuracion")
+        GenerarConfiguracion(parse)
+        return
     for i in lista:
         if 'servidor' in i:
             print i
@@ -80,13 +91,6 @@ def principal():
     reintentos = parse.getint('configuracion', 'reintentos')
     if not parse.get("configuracion", "ayuda") == "NO":
         ayuda()
-    asunto = dict()
-    asunto['arranque'] = parse.get('configuracion', 'arranque')
-    asunto['activo'] = parse.get('configuracion', 'activo')
-    asunto['caido'] = parse.get('configuracion', 'caido')
-    mensaje = parse.get('configuracion', 'mensaje')
-    if not parse.get("configuracion", "saludo") == "NO":
-        send_correo(origen, destinatario, asunto['arranque'], mensaje)
     while True:
         filename = "tmp.txt"
         d = time.strftime("%d/%m/%Y") + " "
@@ -116,11 +120,6 @@ def principal():
                         log(asunto['activo'] + " " + nombre[servidor] +
                             " " +
                             servidor)
-                        send_correo(origen, destinatario,
-                                    asunto['activo'] + " " + nombre[servidor] +
-                                    " " +
-                                    servidor,
-                                    mensaje)
                 else:
                     if not (estadom[servidor] == "caido"):
                         caidasm[servidor] = caidasm[servidor] + 1
@@ -140,12 +139,6 @@ def principal():
                             log(asunto['caido'] + " " + nombre[servidor] +
                                 " " +
                                 servidor + " ")
-                            send_correo(origen, destinatario,
-                                        asunto['caido'] + " " +
-                                        nombre[servidor] +
-                                        " " +
-                                        servidor + " ",
-                                        mensaje)
             time.sleep(1)
 
 
