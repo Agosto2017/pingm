@@ -69,13 +69,13 @@ def principal():
                 estado = parse_estado.get('estado', i)
                 time_stamp = parse_estado.get('time_stamp', i)
                 print estado
-            except:
+            except estado:
                 estado = 'desconocido'
                 time_stamp = '0:00:00'
                 try:
                     parse_estado.add_section('estado')
                     parse_estado.add_section('time_stamp')
-                except:
+                except parse_estado:
                     estado = 'desconocido'
                     time_stamp = '00:00:00'
             parse_estado.set('estado', i, estado)
@@ -85,9 +85,7 @@ def principal():
             nombre[servidor] = i
             time_stampm[servidor] = time_stamp
     guardar_fichero(parse_estado)
-    origen = parse.get('configuracion', 'origen')
     tiempo = parse.getint('configuracion', 'tiempo')
-    destinatario = parse.get('configuracion', 'destinatario')
     reintentos = parse.getint('configuracion', 'reintentos')
     if not parse.get("configuracion", "ayuda") == "NO":
         ayuda()
@@ -101,7 +99,7 @@ def principal():
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
                 print comando
-                if numberpatron(filename,"agotado","inaccesible") < 3:
+                if numberpatron(filename, "agotado", "inaccesible") < 3:
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):
                         print(t + "Cambio de estado de ", estadom[servidor],
