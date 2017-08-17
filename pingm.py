@@ -14,27 +14,27 @@ from getiprange import getiprange as getiprange
 
 
 def ayuda():
-    print("Este programa comprobar la ip")
+    print("Este programa comprobará la ip")
     print("indicada en el fichero.ini")
-    print("cada el tiempo en segundos indicado")
+    print("cada el tiempo <indicado> en segundos")
 
 
 def numberpatron(filename, patron1, patron2):
-    file = open(filename).readlines()
-    numero = 0
-    for i in file:
-        if patron1 in i:
-            numero = numero + 1
-        if patron2 in i:
-            numero = numero + 1
-    return numero
+    with open(filename) as file:
+        file.readlines()
+        numero = 0
+        for i in file:
+            if patron1 in i:
+                numero = numero + 1
+            elif patron2 in i:
+                numero = numero + 1
+        return numero
 
 
 def guardar_fichero(parse_estado):
     # Writing our configuration file to 'example.cfg'
     with open('estado.ini', 'wt') as configfile:
         parse_estado.write(configfile)
-
 
 
 def GenerarConfiguracion(parse, parse_estado):
@@ -57,8 +57,6 @@ def GenerarConfiguracion(parse, parse_estado):
         parse.write(f)
     with open("estado.ini", "w") as f:
         parse_estado.write(f)
-
-
 
 
 def principal():
@@ -91,16 +89,12 @@ def principal():
     asunto['caido'] = parse.get('configuracion', 'caido')
     for i in lista:
         if 'servidor' in i:
-            # print i
             servidor = parse.get('configuracion', i)
             servidorm.append(servidor)
             estado = ""
-            # print i
             try:
                 estado = parse_estado.get('estado', i)
-                # print estado
                 time_stamp = parse_estado.get('time_stamp', i)
-                # print estado
             except estado:
                 estado = 'desconocido'
                 time_stamp = '0:00:00'
@@ -127,10 +121,8 @@ def principal():
         t = time.strftime("%H:%M:%S") + " "
         if int(time.time() % tiempo) == 0:
             for servidor in servidorm:
-                # print servidor
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
-                # print comando
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):
