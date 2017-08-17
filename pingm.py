@@ -36,14 +36,22 @@ def guardar_fichero(parse_estado):
 
 
 def GenerarConfiguracion(parse, parse_estado):
+    time_stamp = '0:00:00'
     parse.add_section('configuracion')
     parse_estado.add_section('estado')
+    parse_estado.add_section('time_stamp')
     parse.set("configuracion", "arranque", "Arranque")
     parse.set("configuracion", "activo", "Activo")
     parse.set("configuracion", "caido", "Caido")
+    parse.set("configuracion", "tiempo", "10")
+    parse.set("configuracion", "tiempo", "10")
+    parse.set("configuracion", "reintentos", "3")
+    parse.set("configuracion", "reintentos", "3")
+    parse.set("configuracion", "ayuda", "ayuda")
     for i in range(1, 254):
         parse.set("configuracion", "servidor" + str(i), "192.168.1." + str(i))
-        parse_estado.set("estado", str(i), 'desconocido')
+        parse_estado.set("estado", "servidor" + str(i), 'desconocido')
+        parse_estado.set("time_stamp", "servidor" + str(i), time_stamp)
     with open("pingm.ini", "w") as f:
         parse.write(f)
     with open("estado.ini", "w") as f:
@@ -66,9 +74,13 @@ def principal():
     except:
         print ("Genero configuracion")
         GenerarConfiguracion(parse, parse_estado)
-        return
+        lista = parse.options('configuracion')
     else:
+        for i in lista:
+            print i
         print "otro error"
+    finally:
+        print "fin"
     asunto = dict()
     asunto['arranque'] = parse.get('configuracion', 'arranque')
     asunto['activo'] = parse.get('configuracion', 'activo')
@@ -78,8 +90,11 @@ def principal():
             print i
             servidor = parse.get('configuracion', i)
             servidorm.append(servidor)
+            estado = ""
+            print i
             try:
                 estado = parse_estado.get('estado', i)
+                print estado
                 time_stamp = parse_estado.get('time_stamp', i)
                 print estado
             except estado:
