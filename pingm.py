@@ -1,27 +1,21 @@
-#!/usr/bin/python
-#    -*-    coding:    utf-8    -*-
+# -*- coding: utf-8 -*-
+# pingm.py
+""" Hace ping a un conjunto de equipos
+"""
+# 17 de Agosto de 2017
+# Luis Angel Lopez
+# Version 1.0
+
 import ConfigParser
 import time
 import os
-# sys.path.append("./SendMail")
 from SendMail import send_email
-
-
-def send_correo(origen_correo, destinatario, asunto, mensaje1):
-    mensaje = []
-    mensaje.append("-" * 50 + "\r\n")
-    mensaje.append(mensaje1)
-    mensaje.append("-" * 50 + "\r\n")
-    send_email(origen_correo, destinatario, asunto, mensaje)
 
 
 def ayuda():
     print("Este programa comprobar la ip")
     print("indicada en el fichero.ini")
     print("cada el tiempo en segundos indicado")
-    print("enviando un correo cuando arranque")
-    print("enviando un correo cuando no conteste")
-    print("enviando otro correo cuando conteste")
 
 
 def numberpatron(filename, patron1, patron2):
@@ -41,13 +35,6 @@ def guardar_fichero(parse_estado):
         parse_estado.write(configfile)
 
 
-def log(msg):
-    d = time.strftime("%d/%m/%Y") + " "
-    t = time.strftime("%H:%M:%S") + " "
-    file = time.strftime("%Y%m%d") + ".log"
-    comando = "echo " + d + t + msg + " >> " + file
-    print comando
-    os.system(comando)
 
 
 def principal():
