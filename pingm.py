@@ -89,16 +89,12 @@ def principal():
     asunto['caido'] = parse.get('configuracion', 'caido')
     for i in lista:
         if 'servidor' in i:
-            # print i
             servidor = parse.get('configuracion', i)
             servidorm.append(servidor)
             estado = ""
-            # print i
             try:
                 estado = parse_estado.get('estado', i)
-                # print estado
                 time_stamp = parse_estado.get('time_stamp', i)
-                # print estado
             except estado:
                 estado = 'desconocido'
                 time_stamp = '0:00:00'
@@ -125,10 +121,8 @@ def principal():
         t = time.strftime("%H:%M:%S") + " "
         if int(time.time() % tiempo) == 0:
             for servidor in servidorm:
-                # print servidor
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
-                # print comando
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):

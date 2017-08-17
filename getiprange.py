@@ -15,3 +15,7 @@ def getiprange():
     a = host_ip.split(".", 3)[1:4]
     b = ".".join(a) + "."
     return b
+
+
+if __name__ == "__main__":
+    print getiprange()
