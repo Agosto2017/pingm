@@ -10,6 +10,7 @@ import ConfigParser
 import time
 import os
 from log import log as log
+from getiprange import getiprange as getiprange
 
 
 def ayuda():
@@ -35,6 +36,7 @@ def guardar_fichero(parse_estado):
         parse_estado.write(configfile)
 
 
+
 def GenerarConfiguracion(parse, parse_estado):
     time_stamp = '0:00:00'
     parse.add_section('configuracion')
@@ -43,19 +45,20 @@ def GenerarConfiguracion(parse, parse_estado):
     parse.set("configuracion", "arranque", "Arranque")
     parse.set("configuracion", "activo", "Activo")
     parse.set("configuracion", "caido", "Caido")
-    parse.set("configuracion", "tiempo", "10")
-    parse.set("configuracion", "tiempo", "10")
+    parse.set("configuracion", "tiempo", "1")
     parse.set("configuracion", "reintentos", "3")
     parse.set("configuracion", "reintentos", "3")
     parse.set("configuracion", "ayuda", "ayuda")
     for i in range(1, 254):
-        parse.set("configuracion", "servidor" + str(i), "192.168.1." + str(i))
+        parse.set("configuracion", "servidor" + str(i), getiprange() + str(i))
         parse_estado.set("estado", "servidor" + str(i), 'desconocido')
         parse_estado.set("time_stamp", "servidor" + str(i), time_stamp)
     with open("pingm.ini", "w") as f:
         parse.write(f)
     with open("estado.ini", "w") as f:
         parse_estado.write(f)
+
+
 
 
 def principal():
@@ -77,7 +80,8 @@ def principal():
         lista = parse.options('configuracion')
     else:
         for i in lista:
-            print i
+            # print i
+            pass
         print "otro error"
     finally:
         print "fin"
@@ -87,16 +91,16 @@ def principal():
     asunto['caido'] = parse.get('configuracion', 'caido')
     for i in lista:
         if 'servidor' in i:
-            print i
+            # print i
             servidor = parse.get('configuracion', i)
             servidorm.append(servidor)
             estado = ""
-            print i
+            # print i
             try:
                 estado = parse_estado.get('estado', i)
-                print estado
+                # print estado
                 time_stamp = parse_estado.get('time_stamp', i)
-                print estado
+                # print estado
             except estado:
                 estado = 'desconocido'
                 time_stamp = '0:00:00'
@@ -123,10 +127,10 @@ def principal():
         t = time.strftime("%H:%M:%S") + " "
         if int(time.time() % tiempo) == 0:
             for servidor in servidorm:
-                print servidor
+                # print servidor
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
-                print comando
+                # print comando
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):
