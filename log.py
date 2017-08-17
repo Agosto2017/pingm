@@ -9,6 +9,7 @@
 import time
 import os
 
+
 def log(msg):
     d = time.strftime("%d/%m/%Y") + " "
     t = time.strftime("%H:%M:%S") + " "
@@ -19,4 +20,4 @@ def log(msg):
 
 
 if __name__ == '__main__':
-	log("test")
+    log("test")

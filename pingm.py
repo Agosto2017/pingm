@@ -35,12 +35,19 @@ def guardar_fichero(parse_estado):
         parse_estado.write(configfile)
 
 
-def GenerarConfiguracion(parse):
+def GenerarConfiguracion(parse, parse_estado):
     parse.add_section('configuracion')
+    parse_estado.add_section('estado')
+    parse.set("configuracion", "arranque", "Arranque")
+    parse.set("configuracion", "activo", "Activo")
+    parse.set("configuracion", "caido", "Caido")
     for i in range(1, 254):
         parse.set("configuracion", "servidor" + str(i), "192.168.1." + str(i))
+        parse_estado.set("estado", str(i), 'desconocido')
     with open("pingm.ini", "w") as f:
         parse.write(f)
+    with open("estado.ini", "w") as f:
+        parse_estado.write(f)
 
 
 def principal():
@@ -56,10 +63,16 @@ def principal():
     time_stampm = dict()
     try:
         lista = parse.options('configuracion')
-    except lista:
+    except:
         print ("Genero configuracion")
-        GenerarConfiguracion(parse)
+        GenerarConfiguracion(parse, parse_estado)
         return
+    else:
+        print "otro error"
+    asunto = dict()
+    asunto['arranque'] = parse.get('configuracion', 'arranque')
+    asunto['activo'] = parse.get('configuracion', 'activo')
+    asunto['caido'] = parse.get('configuracion', 'caido')
     for i in lista:
         if 'servidor' in i:
             print i
