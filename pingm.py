@@ -14,154 +14,140 @@ from getiprange import getiprange as getiprange
 
 
 def ayuda():
-    print("Este programa comprobará la ip")
-    print("indicada en el fichero.ini")
-    print("cada el tiempo <indicado> en segundos")
+    print("Este programa comprobará la ip\n"
+          "indicada en el fichero.ini\n"
+          "cada el tiempo <indicado> en segundos\n")
 
 
 def numberpatron(filename, patron1, patron2):
     with open(filename) as f:
-        file = f.readlines()
-        numero = 0
-        for i in file:
-            if patron1 in i:
-                numero = numero + 1
-            elif patron2 in i:
-                numero = numero + 1
-        return numero
+        fi = f.readlines()
+        n = 0
+        for i in fi:
+            n = n + 1 if patron1 in i else n
+            n = n + 1 if patron2 in i else n
+        return n
 
 
-def guardar_fichero(parse_estado):
-    # Writing our configuration file to 'example.cfg'
+def guardar_fichero(p_estado):
     with open('estado.ini', 'wt') as configfile:
-        parse_estado.write(configfile)
+        p_estado.write(configfile)
 
 
-def GenerarConfiguracion(parse, parse_estado):
+def GenerarConfiguracion(p, p_estado):
     time_stamp = '0:00:00'
-    parse.add_section('configuracion')
-    parse_estado.add_section('estado')
-    parse_estado.add_section('time_stamp')
-    parse.set("configuracion", "arranque", "Arranque")
-    parse.set("configuracion", "activo", "Activo")
-    parse.set("configuracion", "caido", "Caido")
-    parse.set("configuracion", "tiempo", "1")
-    parse.set("configuracion", "reintentos", "0")
-    parse.set("configuracion", "ayuda", "ayuda")
+    p.add_section('configuracion')
+    p_estado.add_section('estado')
+    p_estado.add_section('time_stamp')
+    p.set("configuracion", "arranque", "Arranque")
+    p.set("configuracion", "activo", "Activo")
+    p.set("configuracion", "caido", "Caido")
+    p.set("configuracion", "tiempo", "1")
+    p.set("configuracion", "reintentos", "0")
+    p.set("configuracion", "ayuda", "ayuda")
     for i in range(1, 254):
-        parse.set("configuracion", "servidor" + str(i), getiprange() + str(i))
-        parse_estado.set("estado", "servidor" + str(i), 'desconocido')
-        parse_estado.set("time_stamp", "servidor" + str(i), time_stamp)
+        p.set("configuracion", "servidor" + str(i), getiprange() + str(i))
+        p_estado.set("estado", "servidor" + str(i), 'desconocido')
+        p_estado.set("time_stamp", "servidor" + str(i), time_stamp)
     with open("pingm.ini", "w") as f:
-        parse.write(f)
+        p.write(f)
     with open("estado.ini", "w") as f:
-        parse_estado.write(f)
+        p_estado.write(f)
 
 
 def principal():
     log("Principal")
-    parse = ConfigParser.RawConfigParser()
-    parse_estado = ConfigParser.RawConfigParser()
-    parse.read("pingm.ini")
-    parse_estado.read("estado.ini")
-    servidorm = []
-    estadom = dict()
+    p = ConfigParser.RawConfigParser()
+    p_estado = ConfigParser.RawConfigParser()
+    p.read("pingm.ini")
+    p_estado.read("estado.ini")
+    eqm = []
+    stdm = dict()
     caidasm = dict()
-    nombre = dict()
+    name = dict()
     time_stampm = dict()
     try:
-        lista = parse.options('configuracion')
+        lista = p.options('configuracion')
     except:
         print ("Genero configuracion")
-        GenerarConfiguracion(parse, parse_estado)
-        lista = parse.options('configuracion')
-    else:
-        for i in lista:
-            # print i
-            pass
-        print "otro error"
+        GenerarConfiguracion(p, p_estado)
+        lista = p.options('configuracion')
     finally:
-        print "fin"
-    asunto = dict()
-    asunto['arranque'] = parse.get('configuracion', 'arranque')
-    asunto['activo'] = parse.get('configuracion', 'activo')
-    asunto['caido'] = parse.get('configuracion', 'caido')
+        pass
+    sbj = dict()
+    sbj['arranque'] = p.get('configuracion', 'arranque')
+    sbj['activo'] = p.get('configuracion', 'activo')
+    sbj['caido'] = p.get('configuracion', 'caido')
     for i in lista:
         if 'servidor' in i:
-            servidor = parse.get('configuracion', i)
-            servidorm.append(servidor)
+            eq = p.get('configuracion', i)
+            eqm.append(eq)
             estado = ""
             try:
-                estado = parse_estado.get('estado', i)
-                time_stamp = parse_estado.get('time_stamp', i)
+                estado = p_estado.get('estado', i)
+                time_stamp = p_estado.get('time_stamp', i)
             except estado:
                 estado = 'desconocido'
                 time_stamp = '0:00:00'
                 try:
-                    parse_estado.add_section('estado')
-                    parse_estado.add_section('time_stamp')
-                except parse_estado:
+                    p_estado.add_section('estado')
+                    p_estado.add_section('time_stamp')
+                except p_estado:
                     estado = 'desconocido'
                     time_stamp = '00:00:00'
-            parse_estado.set('estado', i, estado)
-            parse_estado.set('time_stamp', i, time_stamp)
-            estadom[servidor] = estado
-            caidasm[servidor] = 0
-            nombre[servidor] = i
-            time_stampm[servidor] = time_stamp
-    guardar_fichero(parse_estado)
-    tiempo = parse.getint('configuracion', 'tiempo')
-    reintentos = parse.getint('configuracion', 'reintentos')
-    if not parse.get("configuracion", "ayuda") == "NO":
+            p_estado.set('estado', i, estado)
+            p_estado.set('time_stamp', i, time_stamp)
+            stdm[eq] = estado
+            caidasm[eq] = 0
+            name[eq] = i
+            time_stampm[eq] = time_stamp
+    guardar_fichero(p_estado)
+    tiempo = p.getint('configuracion', 'tiempo')
+    reintentos = p.getint('configuracion', 'reintentos')
+    if not p.get("configuracion", "ayuda") == "NO":
         ayuda()
         print "tiempo", tiempo
     while True:
         filename = "tmp.txt"
         if int(time.time()) % tiempo == 0:
-            for servidor in servidorm:
+            for eq in eqm:
                 d = time.strftime("%d/%m/%Y") + " "
                 t = time.strftime("%H:%M:%S") + " "
-                comando = "ping -n 3 " + servidor + "> " + filename
+                comando = "ping -n 3 " + eq + "> " + filename
                 os.system(comando)
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
-                    print servidor, "Activo"
-                    caidasm[servidor] = 0
-                    if not (estadom[servidor] == "activo"):
-                        print(t + "Cambio de estado de ", estadom[servidor],
-                              " a estado activo: " + nombre[servidor] + " " +
-                              servidor)
-                        estadom[servidor] = "activo"
-                        time_stampm[servidor] = d + t
-                        print "servidor", servidor
-                        print "nombre[servidor]", nombre[servidor]
-                        print "estado[servidor]", estadom[servidor]
-                        parse_estado.set('estado', nombre[servidor],
-                                         estadom[servidor])
-                        parse_estado.set('time_stamp', nombre[servidor],
-                                         time_stampm[servidor])
-                        guardar_fichero(parse_estado)
-                        log(asunto['activo'] + " " + nombre[servidor] +
-                            " " +
-                            servidor)
+                    print eq, "Activo"
+                    caidasm[eq] = 0
+                    if not (stdm[eq] == "activo"):
+                        print(t + "Cambio de estado de ", stdm[eq],
+                              " a estado activo: " + name[eq] + " " +
+                              eq)
+                        stdm[eq] = "activo"
+                        time_stampm[eq] = d + t
+                        print "eq", eq
+                        print "name[eq]", name[eq]
+                        print "estado[eq]", stdm[eq]
+                        p_estado.set('estado', name[eq],
+                                     stdm[eq])
+                        p_estado.set('time_stamp', name[eq],
+                                     time_stampm[eq])
+                        guardar_fichero(p_estado)
+                        log(sbj['activo'] + " " + name[eq] + " " + eq)
                 else:
-                    if not (estadom[servidor] == "caido"):
-                        caidasm[servidor] = caidasm[servidor] + 1
-                        if caidasm[servidor] >= reintentos:
-                            print(t + "Cambio de estado de ",
-                                  estadom[servidor],
-                                  " a estado no_activo: " + nombre[servidor] +
-                                  " " +
-                                  servidor)
-                            estadom[servidor] = "caido"
-                            time_stampm[servidor] = d + t
-                            parse_estado.set('estado', nombre[servidor],
-                                             estadom[servidor])
-                            parse_estado.set('time_stamp', nombre[servidor],
-                                             time_stampm[servidor])
-                            guardar_fichero(parse_estado)
-                            log(asunto['caido'] + " " + nombre[servidor] +
-                                " " +
-                                servidor + " ")
+                    if not (stdm[eq] == "caido"):
+                        caidasm[eq] = caidasm[eq] + 1
+                        if caidasm[eq] >= reintentos:
+                            print(t + "Cambio de estado de ", stdm[eq],
+                                  " a estado no_activo: " + name[eq] + " " +
+                                  eq)
+                            stdm[eq] = "caido"
+                            time_stampm[eq] = d + t
+                            p_estado.set('estado', name[eq],
+                                         stdm[eq])
+                            p_estado.set('time_stamp', name[eq],
+                                         time_stampm[eq])
+                            guardar_fichero(p_estado)
+                            log(sbj['caido'] + " " + name[eq] + " " + eq)
             time.sleep(1)
 
 
