@@ -14,10 +14,10 @@ from getiprange import getiprange as getiprange
 from GenerarConfiguracion import GenerarConfiguracion as gc
 
 
-def ayuda():
+def ayuda(tiempo):
     print("Este programa comprobará la ip\n"
           "indicada en el fichero.ini\n"
-          "cada el tiempo <indicado> en segundos\n")
+          "cada el tiempo <%d> en segundos\n" % tiempo)
 
 
 def numberpatron(filename, patron1, patron2):
@@ -85,8 +85,7 @@ def principal():
     tiempo = p.getint('configuracion', 'tiempo')
     reintentos = p.getint('configuracion', 'reintentos')
     if not p.get("configuracion", "ayuda") == "NO":
-        ayuda()
-        print "tiempo", tiempo
+        ayuda(tiempo)
     while True:
         filename = "tmp.txt"
         if int(time.time()) % tiempo == 0:
