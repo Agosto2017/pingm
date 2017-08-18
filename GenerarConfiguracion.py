@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # GenerarConfiguracion.py
+# pingm.py
 """ Hace ping a un conjunto de equipos
 """
 # 18 de Agosto de 2017
