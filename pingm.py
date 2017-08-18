@@ -20,8 +20,8 @@ def ayuda():
 
 
 def numberpatron(filename, patron1, patron2):
-    with open(filename) as file:
-        file.readlines()
+    with open(filename) as f:
+        file = f.readlines()
         numero = 0
         for i in file:
             if patron1 in i:
@@ -46,8 +46,7 @@ def GenerarConfiguracion(parse, parse_estado):
     parse.set("configuracion", "activo", "Activo")
     parse.set("configuracion", "caido", "Caido")
     parse.set("configuracion", "tiempo", "1")
-    parse.set("configuracion", "reintentos", "3")
-    parse.set("configuracion", "reintentos", "3")
+    parse.set("configuracion", "reintentos", "0")
     parse.set("configuracion", "ayuda", "ayuda")
     for i in range(1, 254):
         parse.set("configuracion", "servidor" + str(i), getiprange() + str(i))
@@ -115,15 +114,17 @@ def principal():
     reintentos = parse.getint('configuracion', 'reintentos')
     if not parse.get("configuracion", "ayuda") == "NO":
         ayuda()
+        print "tiempo",tiempo
     while True:
         filename = "tmp.txt"
-        if int(time.time() % tiempo) == 0:
-            d = time.strftime("%d/%m/%Y") + " "
-            t = time.strftime("%H:%M:%S") + " "
+        if int(time.time()) % tiempo == 0:
             for servidor in servidorm:
+                d = time.strftime("%d/%m/%Y") + " "
+                t = time.strftime("%H:%M:%S") + " "
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
+                    print servidor,"Activo",numberpatron(filename, "agotado", "inaccesible")
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):
                         print(t + "Cambio de estado de ", estadom[servidor],
