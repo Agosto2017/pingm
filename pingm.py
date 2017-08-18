@@ -117,9 +117,9 @@ def principal():
         ayuda()
     while True:
         filename = "tmp.txt"
-        d = time.strftime("%d/%m/%Y") + " "
-        t = time.strftime("%H:%M:%S") + " "
         if int(time.time() % tiempo) == 0:
+            d = time.strftime("%d/%m/%Y") + " "
+            t = time.strftime("%H:%M:%S") + " "
             for servidor in servidorm:
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
