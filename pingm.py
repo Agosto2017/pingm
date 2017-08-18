@@ -11,6 +11,7 @@ import time
 import os
 from log import log as log
 from getiprange import getiprange as getiprange
+from GenerarConfiguracion import GenerarConfiguracion as gc
 
 
 def ayuda():
@@ -34,27 +35,6 @@ def guardar_fichero(p_estado):
         p_estado.write(configfile)
 
 
-def GenerarConfiguracion(p, p_estado):
-    time_stamp = '0:00:00'
-    p.add_section('configuracion')
-    p_estado.add_section('estado')
-    p_estado.add_section('time_stamp')
-    p.set("configuracion", "arranque", "Arranque")
-    p.set("configuracion", "activo", "Activo")
-    p.set("configuracion", "caido", "Caido")
-    p.set("configuracion", "tiempo", "1")
-    p.set("configuracion", "reintentos", "0")
-    p.set("configuracion", "ayuda", "ayuda")
-    for i in range(1, 254):
-        p.set("configuracion", "servidor" + str(i), getiprange() + str(i))
-        p_estado.set("estado", "servidor" + str(i), 'desconocido')
-        p_estado.set("time_stamp", "servidor" + str(i), time_stamp)
-    with open("pingm.ini", "w") as f:
-        p.write(f)
-    with open("estado.ini", "w") as f:
-        p_estado.write(f)
-
-
 def principal():
     log("Principal")
     p = ConfigParser.RawConfigParser()
@@ -70,7 +50,7 @@ def principal():
         lista = p.options('configuracion')
     except:
         print ("Genero configuracion")
-        GenerarConfiguracion(p, p_estado)
+        gc(p, p_estado, getiprange())
         lista = p.options('configuracion')
     finally:
         pass
