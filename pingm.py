@@ -47,11 +47,11 @@ def principal():
     name = dict()
     time_stampm = dict()
     try:
-        lista = p.options('configuracion')
+        lista = p.options('Equipos')
     except:
         print ("Genero configuracion")
         gc(p, p_estado, getiprange())
-        lista = p.options('configuracion')
+        lista = p.options('Equipos')
     finally:
         pass
     sbj = dict()
@@ -59,28 +59,27 @@ def principal():
     sbj['activo'] = p.get('configuracion', 'activo')
     sbj['caido'] = p.get('configuracion', 'caido')
     for i in lista:
-        if 'servidor' in i:
-            eq = p.get('configuracion', i)
-            eqm.append(eq)
-            estado = ""
+        eq = p.get('Equipos', i)
+        eqm.append(eq)
+        estado = ""
+        try:
+            estado = p_estado.get('estado', i)
+            time_stamp = p_estado.get('time_stamp', i)
+        except estado:
+            estado = 'desconocido'
+            time_stamp = '0:00:00'
             try:
-                estado = p_estado.get('estado', i)
-                time_stamp = p_estado.get('time_stamp', i)
-            except estado:
+                p_estado.add_section('estado')
+                p_estado.add_section('time_stamp')
+            except p_estado:
                 estado = 'desconocido'
-                time_stamp = '0:00:00'
-                try:
-                    p_estado.add_section('estado')
-                    p_estado.add_section('time_stamp')
-                except p_estado:
-                    estado = 'desconocido'
-                    time_stamp = '00:00:00'
-            p_estado.set('estado', i, estado)
-            p_estado.set('time_stamp', i, time_stamp)
-            stdm[eq] = estado
-            caidasm[eq] = 0
-            name[eq] = i
-            time_stampm[eq] = time_stamp
+                time_stamp = '00:00:00'
+        p_estado.set('estado', i, estado)
+        p_estado.set('time_stamp', i, time_stamp)
+        stdm[eq] = estado
+        caidasm[eq] = 0
+        name[eq] = i
+        time_stampm[eq] = time_stamp
     guardar_fichero(p_estado)
     tiempo = p.getint('configuracion', 'tiempo')
     reintentos = p.getint('configuracion', 'reintentos')
@@ -97,6 +96,7 @@ def principal():
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
                     print eq, "Activo"
                     caidasm[eq] = 0
+                    print eq
                     if not (stdm[eq] == "activo"):
                         print(t + "Cambio de estado de ", stdm[eq],
                               " a estado activo: " + name[eq] + " " +
@@ -111,7 +111,10 @@ def principal():
                         p_estado.set('time_stamp', name[eq],
                                      time_stampm[eq])
                         guardar_fichero(p_estado)
-                        log(sbj['activo'] + " " + name[eq] + " " + eq)
+                        print "escribo log"
+                        log(name[eq] + " " + sbj['activo'] + " (" + eq + ")")
+                    else:
+                        print "no cambio"
                 else:
                     if not (stdm[eq] == "caido"):
                         caidasm[eq] = caidasm[eq] + 1
@@ -126,7 +129,8 @@ def principal():
                             p_estado.set('time_stamp', name[eq],
                                          time_stampm[eq])
                             guardar_fichero(p_estado)
-                            log(sbj['caido'] + " " + name[eq] + " " + eq)
+                            log(name[eq] + " " + sbj['caido'] +
+                                " (" + eq + ")")
             time.sleep(1)
 
 
