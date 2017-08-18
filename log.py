@@ -15,7 +15,7 @@ def log(msg):
     t = time.strftime("%H:%M:%S") + " "
     file = time.strftime("%Y%m%d") + ".log"
     comando = "echo " + d + t + msg + " >> " + file
-    print comando
+    print comando,"......."
     os.system(comando)
 
 
