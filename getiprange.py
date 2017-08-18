@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # getiprange.py
 """ Hace ping a un conjunto de equipos
