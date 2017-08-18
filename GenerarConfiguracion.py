@@ -19,7 +19,7 @@ def GenerarConfiguracion(p, p_estado, rango):
     p.set("configuracion", "tiempo", "1")
     p.set("configuracion", "reintentos", "0")
     p.set("configuracion", "ayuda", "ayuda")
-    for i in range(1, 254):
+    for i in range(1, 256):
         p.set("Equipos", "Equipo_" + str(i), rango + str(i))
         p_estado.set("estado", "Equipo_" + str(i), 'desconocido')
         p_estado.set("time_stamp", "Equipo_" + str(i), time_stamp)

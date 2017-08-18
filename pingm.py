@@ -59,12 +59,21 @@ def principal():
     sbj['arranque'] = p.get('configuracion', 'arranque')
     sbj['activo'] = p.get('configuracion', 'activo')
     sbj['caido'] = p.get('configuracion', 'caido')
+    haydes = 0
+    hayact = 0
+    haycai = 0
     for i in lista:
         eq = p.get('Equipos', i)
         eqm.append(eq)
         estado = ""
         try:
             estado = p_estado.get('estado', i)
+            if estado == 'desconocido':
+                haydes = haydes + 1
+            elif estado == 'activo':
+                hayact = hayact + 1
+            elif estado == 'caido':
+                haycai = haycai + 1
             time_stamp = p_estado.get('time_stamp', i)
         except estado:
             estado = 'desconocido'
@@ -90,6 +99,15 @@ def principal():
         filename = "tmp.txt"
         if int(time.time()) % tiempo == 0:
             for eq in eqm:
+                print "des, act, cai", haydes, hayact, haycai,haydes + hayact + haycai
+                if haydes > 0:
+                    if not stdm[eq] == "desconocido":
+                        continue
+                    haydes = haydes - 1
+                elif hayact > 0:
+                    if not stdm[eq] == "activo":
+                        continue
+                    hayact = hayact - 1
                 d = time.strftime("%d/%m/%Y") + " "
                 t = time.strftime("%H:%M:%S") + " "
                 if is_windows:
@@ -106,6 +124,7 @@ def principal():
                               " a estado activo: " + name[eq] + " " +
                               eq)
                         stdm[eq] = "activo"
+                        hayact = hayact + 1
                         time_stampm[eq] = d + t
                         print "eq", eq
                         print "name[eq]", name[eq]
@@ -121,6 +140,7 @@ def principal():
                         print "no cambio"
                 else:
                     if not (stdm[eq] == "caido"):
+                        haycai = haycai + 1
                         caidasm[eq] = caidasm[eq] + 1
                         if caidasm[eq] >= reintentos:
                             print(t + "Cambio de estado de ", stdm[eq],
