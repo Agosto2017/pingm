@@ -12,7 +12,7 @@ import socket
 def getiprange():
     host_name = socket.gethostname()
     host_ip = socket.gethostbyname(host_name)
-    a = host_ip.split(".", 3)[1:4]
+    a = host_ip.split(".", 3)[0:3]
     b = ".".join(a) + "."
     return b
 

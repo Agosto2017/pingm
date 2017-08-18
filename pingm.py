@@ -114,7 +114,7 @@ def principal():
     reintentos = parse.getint('configuracion', 'reintentos')
     if not parse.get("configuracion", "ayuda") == "NO":
         ayuda()
-        print "tiempo",tiempo
+        print "tiempo", tiempo
     while True:
         filename = "tmp.txt"
         if int(time.time()) % tiempo == 0:
@@ -124,7 +124,7 @@ def principal():
                 comando = "ping -n 3 " + servidor + "> " + filename
                 os.system(comando)
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
-                    print servidor,"Activo",numberpatron(filename, "agotado", "inaccesible")
+                    print servidor, "Activo"
                     caidasm[servidor] = 0
                     if not (estadom[servidor] == "activo"):
                         print(t + "Cambio de estado de ", estadom[servidor],
