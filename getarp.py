@@ -10,7 +10,7 @@ import ConfigParser
 import os
 import time
 from file import guardar_fichero
-
+from getos import is_windows
 
 def GenerarConfiguracion(p_mac):
     try:
@@ -32,12 +32,19 @@ def getarp(ip):
     except ConfigParser.NoOptionError:
         mac = None
     if not mac:
-        os.system("ping -n 1 %s >NULL" % ip)
-        os.system("arp -a %s >getarp.txt" % ip)
+        if is_windows is True:
+            os.system("ping -n 1 %s >NULL" % ip)
+            os.system("arp -a %s >getarp.txt" % ip)
+        else:
+            os.system("ping -c 1 %s >NULL" % ip)
+            os.system("arp -a %s >getarp.txt" % ip)
         with open('getarp.txt', 'rt') as f:
             try:
                 l1 = f.readlines()
-                r = l1[3].split()[1].replace("-", ":")
+                if is_windows is True:
+                    r = l1[3].split()[1].replace("-", ":")
+                else:
+                    r = l1[0].split()[3]
             except IndexError:
                 r = "00" + ":00" * 5
             p_mac.set("mac", ip, r)

@@ -18,7 +18,6 @@ def Activas(estado=True):
                     activas[ip] = ho
                     continue
                 activas[ip] = ho
-                # na = getname(ip)
                 # print ho, ip
             if "Caido_" in i and estado is False:
                 cont = cont + 1
@@ -74,6 +73,15 @@ def activasycaidas():
 
 if __name__ == '__main__':
     res = activasycaidas()
+    print "Numero",len(res)
+    if len(res)==0:
+        print "Activas"
+        print "-------"
+        a, k = Activas(True)
+        print len(a)
+        for i in a:
+            print i, getname(i)
+    print 20 * "_"
     for i in range(len(res)):
         print i,res[i].hi
         print res[i].hi, res[i].hf, res[i].stdi

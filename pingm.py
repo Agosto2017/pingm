@@ -21,13 +21,13 @@ def ayuda(tiempo):
           "cada el tiempo <%d> en segundos\n" % tiempo)
 
 
-def numberpatron(filename, patron1, patron2):
+def numberpatron(filename, patrones):
     with open(filename) as f:
         fi = f.readlines()
         n = 0
         for i in fi:
-            n = n + 1 if patron1 in i else n
-            n = n + 1 if patron2 in i else n
+            for patron in patrones:
+                n = n + 1 if patron in i else n
         return n
 
 
@@ -66,6 +66,11 @@ def principal():
         try:
             estado = p_estado.get('estado', i)
             time_stamp = p_estado.get('time_stamp', i)
+        except ConfigParser.NoSectionError:
+            p_estado.add_section('time_stamp')
+            time_stamp = '0:00:00'
+        except ConfigParser.NoOptionError:
+            p_estado.set('time_stamp', i, time_stamp)
         except estado:
             estado = 'desconocido'
             time_stamp = '0:00:00'
@@ -98,7 +103,7 @@ def principal():
                     comando = "ping -c 3 " + eq + "> " + filename
                 print "Revisando", eq
                 os.system(comando)
-                if numberpatron(filename, "agotado", "inaccesible") < 3:
+                if numberpatron(filename, ("agotado", "inaccesible", "Unreachable")) < 3:
                     caidasm[eq] = 0
                     if not (stdm[eq] == "activo"):
                         print(t + "Cambio de estado de ", stdm[eq],
