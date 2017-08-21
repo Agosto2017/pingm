@@ -14,6 +14,7 @@ def GenerarConfiguracion(p, p_estado, rango):
     p.add_section('Equipos')
     p_estado.add_section('estado')
     p_estado.add_section('time_stamp')
+    p_estado.add_section('MAC')
     p.set("configuracion", "arranque", "Arranque")
     p.set("configuracion", "activo", "Activo")
     p.set("configuracion", "caido", "Caido_")

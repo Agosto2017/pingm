@@ -125,11 +125,13 @@ def principal():
                               " a estado activo: " + name[eq] + " " +
                               eq)
                         if stdm[eq] == "activo":
-                            hayact.delete(eq) 
+                            del hayact[hayact.index(equ)] 
                         elif stdm[eq] == "caido":
-                            haycai.delete(eq)
+                            print haycai
+                            print eq,stdm[eq],haycai.index(eq)
+                            del haycai[haycai.index(eq)]
                         elif stdm[eq] == "desconocido":
-                            haydes.delete(eq)
+                            del haydes[haydes.index(eq)]
 
                         stdm[eq] = "activo"
                         hayact.append(eq)
@@ -141,6 +143,9 @@ def principal():
                                      stdm[eq])
                         p_estado.set('time_stamp', name[eq],
                                      time_stampm[eq])
+                        from hardping import getmac as getmac
+                        mac = getmac(ip)
+                        p_estado.set('mac', eq, mac)
                         guardar_fichero(p_estado)
                         print "escribo log"
                         log(name[eq] + " " + sbj['activo'] + " (" + eq + ")")
