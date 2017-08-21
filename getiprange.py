@@ -19,4 +19,3 @@ def getiprange():
 
 if __name__ == "__main__":
     print getiprange()
-

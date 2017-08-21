@@ -49,7 +49,7 @@ def principal():
     time_stampm = dict()
     try:
         lista = p.options('Equipos')
-    except:
+    except ConfigParser.NoSectionError:
         print ("Genero configuracion")
         gc(p, p_estado, getiprange())
         lista = p.options('Equipos')
@@ -59,21 +59,12 @@ def principal():
     sbj['arranque'] = p.get('configuracion', 'arranque')
     sbj['activo'] = p.get('configuracion', 'activo')
     sbj['caido'] = p.get('configuracion', 'caido')
-    haydes = []
-    hayact = []
-    haycai = []
     for i in lista:
         eq = p.get('Equipos', i)
         eqm.append(eq)
         estado = ""
         try:
             estado = p_estado.get('estado', i)
-            if estado == 'desconocido':
-                haydes.append(i)
-            elif estado == 'activo':
-                hayact.append(i)
-            elif estado == 'caido':
-                haycai.append(i)
             time_stamp = p_estado.get('time_stamp', i)
         except estado:
             estado = 'desconocido'
@@ -99,42 +90,21 @@ def principal():
         filename = "tmp.txt"
         if int(time.time()) % tiempo == 0:
             for eq in eqm:
-                filename = "tmp" + eq + ".txt"
-                # print "desconcido %d, activo %d, caido %d, Suma %d"% (haydes, hayact, haycai,haydes + hayact + haycai)
-                if len(haydes) > 0:
-                    if not stdm[eq] == "desconocido":
-                        continue
-                    haydes.remove(eq)
-                # elif len(hayact) > 0:
-                #    if not stdm[eq] == "activo":
-                #        continue
-                    # hayact = hayact - 1
                 d = time.strftime("%d/%m/%Y") + " "
                 t = time.strftime("%H:%M:%S") + " "
                 if is_windows:
                     comando = "ping -n 3 " + eq + "> " + filename
                 else:
                     comando = "ping -c 3 " + eq + "> " + filename
-                print comando
+                print "Revisando", eq
                 os.system(comando)
                 if numberpatron(filename, "agotado", "inaccesible") < 3:
-                    print eq, "Activo"
                     caidasm[eq] = 0
                     if not (stdm[eq] == "activo"):
                         print(t + "Cambio de estado de ", stdm[eq],
                               " a estado activo: " + name[eq] + " " +
                               eq)
-                        if stdm[eq] == "activo":
-                            del hayact[hayact.index(equ)] 
-                        elif stdm[eq] == "caido":
-                            print haycai
-                            print eq,stdm[eq],haycai.index(eq)
-                            del haycai[haycai.index(eq)]
-                        elif stdm[eq] == "desconocido":
-                            del haydes[haydes.index(eq)]
-
                         stdm[eq] = "activo"
-                        hayact.append(eq)
                         time_stampm[eq] = d + t
                         print "eq", eq
                         print "name[eq]", name[eq]
@@ -143,28 +113,17 @@ def principal():
                                      stdm[eq])
                         p_estado.set('time_stamp', name[eq],
                                      time_stampm[eq])
-                        from hardping import getmac as getmac
-                        mac = getmac(ip)
-                        p_estado.set('mac', eq, mac)
                         guardar_fichero(p_estado)
                         print "escribo log"
                         log(name[eq] + " " + sbj['activo'] + " (" + eq + ")")
                 else:
                     if not (stdm[eq] == "caido"):
-                        haycai.append(eq)
                         caidasm[eq] = caidasm[eq] + 1
                         if caidasm[eq] >= reintentos:
                             print(t + "Cambio de estado de ", stdm[eq],
                                   " a estado no_activo: " + name[eq] + " " +
                                   eq)
-                            if stdm[eq] == "activo":
-                                hayact.delete(eq) 
-                            elif stdm[eq] == "caido":
-                                haycai.delete(eq)
-                            elif stdm[eq] == "desconocido":
-                                haydes.delete(eq)
                             stdm[eq] = "caido"
-                            haycai = haycai + 1
                             time_stampm[eq] = d + t
                             p_estado.set('estado', name[eq],
                                          stdm[eq])
@@ -173,7 +132,6 @@ def principal():
                             guardar_fichero(p_estado)
                             log(name[eq] + " " + sbj['caido'] +
                                 " (" + eq + ")")
-                os.remove(filename)
             time.sleep(1)
 
 
